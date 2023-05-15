@@ -2,6 +2,7 @@ package scanner
 
 import (
 	"jlox/errors"
+	"strconv"
 )
 
 type Scanner struct {
@@ -90,7 +91,12 @@ func (s *Scanner) number() Token {
 	for isDigit(s.peek()) {
 		s.advance()
 	}
-	return Token{Type: NUMBER, Lexeme: s.source[s.start:s.current], Literal: s.source[s.start:s.current], Line: s.line}
+	number, err := strconv.ParseFloat(s.source[s.start:s.current], 64)
+	if err != nil {
+		errors.Error(s.line, "Error parsing float")
+		panic("Error parsing float")
+	}
+	return Token{Type: NUMBER, Lexeme: s.source[s.start:s.current], Literal: number, Line: s.line}
 }
 
 func isAlpha(c byte) bool {
