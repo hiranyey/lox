@@ -174,6 +174,20 @@ func (s *Scanner) scanToken() Token {
 				s.advance()
 			}
 			return Token{Type: UNKNOWN, Lexeme: "", Literal: nil, Line: s.line}
+		} else if s.match('*') {
+			for !s.isAtEnd() && !(s.peek() == '*' && s.peekNext() == '/') {
+				if s.peek() == '\n' {
+					s.line++
+				}
+				s.advance()
+			}
+			if s.isAtEnd() {
+				errors.Error(s.line, "Unterminated block comment")
+				panic("Unterminated block comment")
+			}
+			s.advance()
+			s.advance()
+			return Token{Type: UNKNOWN, Lexeme: "", Literal: nil, Line: s.line}
 		} else {
 			return Token{Type: SLASH, Lexeme: "/", Literal: nil, Line: s.line}
 		}
